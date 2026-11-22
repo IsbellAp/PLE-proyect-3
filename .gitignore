@@ -8,3 +8,6 @@ objectilang/instance/output/
 # Material de apoyo local: enunciados, rubrica, tutorial, guias y notas de cambios
 
 docsContexto/
+
+rascal-shell-stable.jar
+typepal-0.17.0.jar
