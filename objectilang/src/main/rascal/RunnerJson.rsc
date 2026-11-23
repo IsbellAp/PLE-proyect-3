@@ -61,17 +61,24 @@ str jsonResult(
     + "\"objetos\":<jsonArr(objetos)>,"
     + "\"metodos\":<jsonArr(metodos)>}";
 
+// Los mensajes de Check sobre la regla de existencia van como errores semánticos; el resto son errores de tipos.
+bool esDeExistencia(str msg) =
+    any(k <- ["Undefined", "Double", "no existe", "ya está definido", "repetido", "hered", "Herencia", "no tiene un"],
+        contains(msg, k));
+
 // Punto de entrada, Kotlin llama a este módulo con la ruta del archivo fuente
 
 void main(list[str] args) {
 
     //Leer el archivo fuente
+    // file y modName van fuera del try: se usan en el resto de main
+    loc file = isEmpty(args)
+        // archivo por defecto para pruebas rápidas desde Rascal directamente
+        ? |cwd:///instance/enunciado1.ol|
+        : (startsWith(args[0], "/") ? |file:///|[path = args[0]] : |cwd:///| + args[0]);
+    str modName = file[extension = ""].file;
     str src;
     try {
-        loc file = isEmpty(args)
-            // archivo por defecto para pruebas rápidas desde Rascal directamente
-            ? |cwd:///instance/enunciado1.ol|
-            : (startsWith(args[0], "/") ? |file:///|[path = args[0]] : |cwd:///| + args[0]);
         src = readFile(file);
     } catch e: {
         println(jsonResult(false, modName, false, false, false, [], [], [], "No se pudo leer el archivo: <e>", "", ""));
@@ -108,7 +115,7 @@ void main(list[str] args) {
 
     // Lista de módulos del archivo: los objetos y sus métodos
     list[str] objetos = [ n | /"objeto"(str n, _, _, _) := ast ];
-    list[str] metodos = [ "<o>.<m>" | /"metodo"(str o, str m, _, _, _) := ast ];
+    list[str] metodos = [ "<ob>.<m>" | /"metodo"(str ob, str m, _, _, _) := ast ];
     str resumen = "<size(objetos)> objeto(s), <size(metodos)> método(s)";
 
     //Pretty Printer
