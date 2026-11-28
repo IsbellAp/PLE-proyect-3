@@ -37,5 +37,8 @@ data class RunResult(
     val output: List<String> = emptyList(),
     val error: String = "",
     val codigoFormateado: String = "",
-    val resumen: String = ""
+    val resumen: String = "",
+    // nuevos: los "módulos" del archivo (objetos y métodos definidos)
+    val objetos: List<String> = emptyList(),
+    val metodos: List<String> = emptyList()
 )

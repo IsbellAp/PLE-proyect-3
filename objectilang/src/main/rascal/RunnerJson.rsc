@@ -72,10 +72,19 @@ void main(list[str] args) {
 
     //Leer el archivo fuente
     // file y modName van fuera del try: se usan en el resto de main
-    loc file = isEmpty(args)
+    loc file;
+    if (isEmpty(args)) {
         // archivo por defecto para pruebas rápidas desde Rascal directamente
-        ? |cwd:///instance/enunciado1.ol|
-        : (startsWith(args[0], "/") ? |file:///|[path = args[0]] : |cwd:///| + args[0]);
+        file = |cwd:///instance/enunciado1.ol|;
+    } else {
+        str arg0 = replaceAll(args[0], "\\", "/");       // normaliza separadores de Windows (\ -> /)
+        if (startsWith(arg0, "/"))
+            file = |file:///|[path = arg0];
+        else if (size(arg0) >= 2 && arg0[1] == ":")      // ruta absoluta de Windows: C:/...
+            file = |file:///|[path = "/" + arg0];
+        else
+            file = |cwd:///| + arg0;                      // ruta relativa (ej. instance/enunciado1.ol)
+    }
     str modName = file[extension = ""].file;
     str src;
     try {

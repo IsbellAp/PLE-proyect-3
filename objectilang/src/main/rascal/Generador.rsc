@@ -78,7 +78,10 @@ str nombreClase(loc archivo) = "OL_" + replaceAll(archivo[extension = ""].file, 
 // ejecuta en un solo paso). Si el código no compila, devuelve los errores del compilador.
 str correrJava(loc archivoJava) {
   str java = getSystemProperty("java.home") + "/bin/java";
-  pid = createProcess(java, args = [resolveLocation(archivoJava).path]);
+  str ruta = resolveLocation(archivoJava).path;
+  // En Windows, loc.path viene como "/C:/..." y java no lo reconoce como archivo: quitamos la barra inicial.
+  if (size(ruta) >= 3 && ruta[0] == "/" && ruta[2] == ":") ruta = ruta[1..];
+  pid = createProcess(java, args = [ruta]);
   str salida = readEntireStream(pid);
   str errores = readEntireErrStream(pid);
   killProcess(pid);

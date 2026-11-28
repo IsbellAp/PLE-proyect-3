@@ -81,25 +81,29 @@ class LangService {
         val cmd = listOf(
             "java",
             "-Dfile.encoding=UTF-8",
-            "-Drascal.projectPath=${srcDir.absolutePath}",
+            // fuerza la salida de Rascal a UTF-8 (en Windows por defecto usa otra codificación y las tildes salían como �)
+            "-Dstdout.encoding=UTF-8",
+            "-Dsun.stdout.encoding=UTF-8",
+            "-Drascal.projectPath=${projectRoot.absolutePath}",
             "-jar", rascalJar.absolutePath,
-            // TODO: cambia "milang::RunnerJson" por el módulo Rascal de tu lenguaje
-            // El formato es "nombrePaquete::NombreModulo" (ej. "miprog::RunnerJson")
-            "milang::RunnerJson",
+            // El módulo es "RunnerJson" (su cabecera es `module RunnerJson`, sin paquete)
+            "RunnerJson",
             filePath
         )
 
+        // Rascal debe correr desde la carpeta objectilang (ahí están pom.xml y META-INF)
         val process = ProcessBuilder(cmd)
-            .directory(srcDir)
+            .directory(projectRoot)
             .redirectErrorStream(false)
             .start()
         process.outputStream.close()
 
         // leemos stdout y stderr en hilos separados para evitar deadlocks
+        // Rascal imprime en UTF-8 (por -Dfile.encoding=UTF-8); leemos igual para que las tildes salgan bien
         val stdoutFuture = java.util.concurrent.Executors.newSingleThreadExecutor()
-            .submit<String> { process.inputStream.bufferedReader().readText() }
+            .submit<String> { process.inputStream.bufferedReader(Charsets.UTF_8).readText() }
         val stderrFuture = java.util.concurrent.Executors.newSingleThreadExecutor()
-            .submit<String> { process.errorStream.bufferedReader().readText() }
+            .submit<String> { process.errorStream.bufferedReader(Charsets.UTF_8).readText() }
 
         val finished = process.waitFor(180, TimeUnit.SECONDS)
         if (!finished) {

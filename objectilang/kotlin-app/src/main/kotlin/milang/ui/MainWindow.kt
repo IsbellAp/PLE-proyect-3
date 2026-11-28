@@ -42,8 +42,7 @@ fun MainWindow() {
         modifier = Modifier.fillMaxSize().background(bg).padding(24.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        // TODO: cambia el título por el nombre de tu lenguaje
-        Text("Mi Lenguaje — Runner", color = text, fontSize = 22.sp)
+        Text("Objectilang — Runner", color = text, fontSize = 22.sp)
 
         // Fila superior: campo de ruta, botón de seleccionar archivo, botón de correr
         Row(
@@ -53,8 +52,7 @@ fun MainWindow() {
             OutlinedTextField(
                 value = filePath,
                 onValueChange = { filePath = it },
-                // TODO: actualiza la etiqueta con la extensión de tu lenguaje (ej. "archivo .ml")
-                label = { Text("Ruta del archivo fuente", color = Color.Gray) },
+                label = { Text("Ruta del archivo .ol", color = Color.Gray) },
                 modifier = Modifier.weight(1f),
                 singleLine = true,
                 colors = OutlinedTextFieldDefaults.colors(
@@ -67,8 +65,7 @@ fun MainWindow() {
             Button(
                 onClick = {
                     val chooser = JFileChooser().apply {
-                        // TODO: cambia "ml" y la descripción por la extensión de tu lenguaje
-                        fileFilter = FileNameExtensionFilter("Archivos de Mi Lenguaje (*.ml)", "ml")
+                        fileFilter = FileNameExtensionFilter("Archivos Objectilang (*.ol)", "ol")
                         currentDirectory = File(System.getProperty("user.home"))
                     }
                     if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION)
@@ -115,12 +112,24 @@ fun MainWindow() {
                         Text("módulo: ${r.module}", color = Color(0xFF90CAF9), fontFamily = FontFamily.Monospace)
                 }
 
-                // resumen del AST 
+                // resumen del AST
                 if (r.resumen.isNotBlank()) {
                     Text(r.resumen, color = Color(0xFF9E9E9E), fontFamily = FontFamily.Monospace, fontSize = 12.sp)
                 }
 
-                // error general 
+                // lista de objetos y métodos del archivo (los "módulos" que pide el enunciado)
+                if (r.objetos.isNotEmpty() || r.metodos.isNotEmpty()) {
+                    SectionBox(
+                        "Objetos y métodos del archivo",
+                        buildString {
+                            if (r.objetos.isNotEmpty()) appendLine("Objetos: " + r.objetos.joinToString(", "))
+                            if (r.metodos.isNotEmpty()) append("Métodos: " + r.metodos.joinToString(", "))
+                        }.trim(),
+                        Color(0xFF90CAF9)
+                    )
+                }
+
+                // error general
                 if (r.error.isNotBlank()) {
                     SectionBox("Error", r.error, red)
                 }
