@@ -6,8 +6,7 @@ plugins {
     kotlin("plugin.serialization") version "1.9.22"
 }
 
-// TODO: cambia "milang" por el nombre de tu lenguaje (en minúsculas, sin espacios)
-group = "milang"
+group = "objectilang"
 version = "1.0.0"
 
 repositories {
@@ -26,12 +25,10 @@ dependencies {
 
 compose.desktop {
     application {
-        // TODO: si renombraste el paquete, actualiza aquí también (ej. "milang.MainKt")
-        mainClass = "milang.MainKt"
+        mainClass = "objectilang.MainKt"
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            // TODO: cambia el packageName por el nombre de tu lenguaje
-            packageName = "MiLang"
+            packageName = "objectilang"
             packageVersion = "1.0.0"
         }
     }
